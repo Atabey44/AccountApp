@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 @Service
 public class CustomerService {
 
-    private CustomerRepository customerRepository;
-    private CustomerDtoConvert customerDtoConvert;
+    private final CustomerRepository customerRepository;
+    private final CustomerDtoConvert customerDtoConvert;
 
     public CustomerService(CustomerRepository customerRepository, CustomerDtoConvert customerDtoConvert) {
         this.customerRepository = customerRepository;
@@ -27,8 +27,11 @@ public class CustomerService {
         Optional<Customer> customerOptional = customerRepository.findById(id);
 
         return customerOptional.map(customer -> customerDtoConvert.convert(customer)).orElse(new CustomerDto());
+    }
 
-
+    protected Customer findCustomerById(String id){
+       return customerRepository.findById(id).orElseThrow(
+               () -> new CustomerNotFoundException("Customer could not find by id: " + id));
     }
 
     public List<CustomerDto> getAllCustomers() {
